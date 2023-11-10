@@ -1,10 +1,12 @@
-import React from "react"
-import Sidebar from "./components/Sidebar"
-import Editor from "./components/Editor"
+import React,{lazy,Suspense} from "react"
+// import Sidebar from "./components/Sidebar"
+// import Editor from "./components/Editor"
 import Split from "react-split"
 import { onSnapshot , addDoc, doc, deleteDoc, setDoc} from "firebase/firestore"
 import { notesCollection, db } from "./firebase"
 
+const Sidebar = lazy(() => import("./components/Sidebar"));
+const Editor = lazy(() => import("./components/Editor"));
 export default function App() {
     const [notes, setNotes] = React.useState([])
     const [currentNoteId, setCurrentNoteId] = React.useState("")
@@ -83,6 +85,7 @@ export default function App() {
                         direction="horizontal"
                         className="split"
                     >
+                        <Suspense fallback={<h1>Loading...</h1>}>
                         <Sidebar
                             notes={sortednotes}
                             currentNote={currentNote}
@@ -90,10 +93,13 @@ export default function App() {
                             newNote={createNewNote}
                             deleteNote={deleteNote}
                         />
+                        </Suspense>
+                        <Suspense fallback={<h1>Loading</h1>}>
                         <Editor
                             tempNoteText={tempNoteText}
                             setTempNoteText={setTempNoteText}
                         />
+                        </Suspense>
                     </Split>
                     :
                     <div className="no-notes">
